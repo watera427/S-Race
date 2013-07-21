@@ -1,4 +1,4 @@
-The main file is S_Race function. It's an implementation of S-Race proposed in the following paper. 
+The main file is S_Race.m. It's an implementation of S-Race proposed in the following paper. 
 S-Race is based on sign test and Holm's step-down procedure. 
 Please cite the provided paper is you use the code.
 If you have any questions, please contact the author. 
