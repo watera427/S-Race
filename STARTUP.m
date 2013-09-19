@@ -6,7 +6,7 @@
 % reflect the correct paths of the system in use.
 %
   
-%% Setup paths for RKMDS code and utilities
+%% Setup paths for S_Race code and utilities
 addpath C:\RacingPack\S_Race
  
 %% Notify user

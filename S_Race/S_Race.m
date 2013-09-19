@@ -78,13 +78,13 @@ classdef S_Race < handle
                         % w2 is the number of times that model(t) dominates model(j)
                         if obj.dom(obj.currentM(j),obj.currentM(t),2) == 0 % we haven't calculate the number of dominance at current step
                             if obj.step == 1 
-                                [w1, w2] = dominates(obj.results(:,j,:), obj.results(:,t,:));
+                                [w1, w2] = obj.dominates(obj.results(:,j,:), obj.results(:,t,:));
                                 obj.dom(obj.currentM(j),obj.currentM(t),1) = w1;
                                 obj.dom(obj.currentM(t),obj.currentM(j),1) = w2;
                                 obj.dom(obj.currentM(j),obj.currentM(t),2) = 1;
                                 obj.dom(obj.currentM(t),obj.currentM(j),2) = 1;
                             else
-                                [w1, w2] = dominates(obj.results(end - obj.batch_size + 1:end,j,:), obj.results(end - obj.batch_size + 1: end,t,:));
+                                [w1, w2] = obj.dominates(obj.results(end - obj.batch_size + 1:end,j,:), obj.results(end - obj.batch_size + 1: end,t,:));
                                 obj.dom(obj.currentM(j),obj.currentM(t)) = obj.dom(obj.currentM(j),obj.currentM(t)) + w1;
                                 obj.dom(obj.currentM(t),obj.currentM(j)) = obj.dom(obj.currentM(t),obj.currentM(j)) + w2;
                                 w1 = obj.dom(obj.currentM(j),obj.currentM(t),1);
@@ -111,7 +111,7 @@ classdef S_Race < handle
                 end
                 % Adopt FWER (Holm's procedure 1987) and abandon model(t) where 
                 % the null hypothesis is rejected
-                [index] = Holm(p_values, obj.alpha);
+                [index] = obj.Holm(p_values, obj.alpha);
                 % If we are at the end of racing, models have excatly the
                 % same performance with others are removed
                 index = [index, temp_ind];        
@@ -136,23 +136,23 @@ classdef S_Race < handle
     
     methods (Access = private)
         % find the number of dominance 
-        function [w1, w2] = dominates(results1, results2)
+        function [w1, w2] = dominates(~, results1, results2)
             [a,~,~] = size(results1);
             w1 = 0;
             w2 = 0;
             for i = 1:a
                 temp = results1(i,1,:) - results2(i,1,:);
                 % for minimization problem
-                if min(temp) >=0 && max(temp) > 0
+                if max(temp) <=0 && min(temp) < 0
                     w1 = w1 + 1;
-                elseif max(temp) <=0 && min(temp) < 0
+                elseif min(temp) >=0 && max(temp) > 0
                     w2 = w2 + 1;
                 end
             end
         end % dominates
         
         % Holm's procedure
-        function index = Holm(p_values, alpha)
+        function index = Holm(~,p_values, alpha)
             % find out the index that contains hypothesis
             temp_index = find(p_values(2,:) == 1);
             % find out the p_values involved in the family
